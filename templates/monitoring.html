@@ -1,0 +1,125 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Backup Monitoring</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="monitor-container">
+
+    <header class="monitor-header">
+        <div>
+            <h1>Backup Monitoring</h1>
+            <p>Monitor server backup activities and system status.</p>
+        </div>
+
+        <a href="{{ url_for('index') }}" class="monitor-button">
+            Back to Dashboard
+        </a>
+    </header>
+
+    <div class="monitor-grid">
+
+        <div class="monitor-card">
+            <h3>System Status</h3>
+            <h2 class="status-text">{{ scheduler_status }}</h2>
+            <p>Automatic Backup Scheduler</p>
+        </div>
+
+        <div class="monitor-card">
+            <h3>Total Backups</h3>
+            <h2>{{ total_backups }}</h2>
+            <p>Available backup files</p>
+        </div>
+
+        <div class="monitor-card">
+            <h3>Storage Used</h3>
+            <h2>{{ total_storage }} MB</h2>
+            <p>Total backup storage</p>
+        </div>
+
+        <div class="monitor-card">
+            <h3>Latest Backup</h3>
+            <h2 class="latest-text">{{ latest_backup }}</h2>
+            <p>Most recent backup date</p>
+        </div>
+
+    </div>
+
+    <section class="monitor-history">
+
+        <h2>Backup Monitoring History</h2>
+
+        <div class="table-scroll">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Backup File</th>
+                        <th>Date & Time</th>
+                        <th>Size (KB)</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for backup in backup_files %}
+
+                    <tr>
+                        <td>{{ backup.name }}</td>
+                        <td>{{ backup.date }}</td>
+                        <td>{{ backup.size }}</td>
+                        <td>
+                            <span class="monitor-available">
+                                Available
+                            </span>
+                        </td>
+                        <td>
+    <form action="{{ url_for('verify_backup', filename=backup.name) }}"
+          method="POST">
+
+        <button type="submit" class="refresh-button">
+            Verify
+        </button>
+
+    </form>
+</td>
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+                        <td colspan="5">
+                            No backup files available.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+            </table>
+
+        </div>
+
+        <button onclick="location.reload()"
+                class="refresh-button">
+            Refresh Monitoring
+        </button>
+
+    </section>
+
+</div>
+
+</body>
+</html>

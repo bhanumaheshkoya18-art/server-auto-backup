@@ -1,0 +1,118 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Backup Activity Logs</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="monitor-container">
+
+    <header class="monitor-header">
+
+        <div>
+            <h1>Backup Activity Logs</h1>
+            
+<div class="monitor-grid">
+
+    <div class="monitor-card">
+        <h3>Total Automatic Backups</h3>
+        <h2>{{ total_automatic }}</h2>
+    </div>
+
+    <div class="monitor-card">
+        <h3>Successful Backups</h3>
+        <h2 style="color:green">{{ successful }}</h2>
+    </div>
+
+    <div class="monitor-card">
+        <h3>Failed Backups</h3>
+        <h2 style="color:red">{{ failed }}</h2>
+    </div>
+
+</div>
+
+            <p>View backup verification activities and alerts.</p>
+        </div>
+
+        <a href="{{ url_for('index') }}"
+           class="monitor-button">
+            Dashboard
+        </a>
+
+    </header>
+
+    <section class="monitor-history">
+
+        <h2>Activity History</h2>
+
+        <div class="table-scroll">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Backup File</th>
+                        <th>Action</th>
+                        <th>Status</th>
+                        <th>Message</th>
+                        <th>Date & Time</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for item in logs %}
+
+                    <tr>
+                        <td>{{ item.id }}</td>
+                        <td>{{ item.filename }}</td>
+                        <td>{{ item.action }}</td>
+
+                        <td>
+                            {% if item.status == "Success" %}
+                                <span class="monitor-available">
+                                    Success
+                                </span>
+                            {% else %}
+                                <span class="monitor-failed">
+                                    Failed
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td>{{ item.message }}</td>
+                        <td>{{ item.created_at }}</td>
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+                        <td colspan="6">
+                            No activity logs available.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</div>
+
+</body>
+</html>

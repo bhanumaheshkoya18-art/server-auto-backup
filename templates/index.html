@@ -1,0 +1,257 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Auto Backup System</title>
+
+    <link rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2>AutoBackup</h2>
+    <p>SERVER MANAGEMENT</p>
+
+    <a href="/">Dashboard</a>
+    <a href="#records">Data Management</a>
+    <a href="#history">Backup History</a>
+    <a href="{{ url_for('monitoring') }}">
+    System Monitoring
+</a>
+<a href="{{ url_for('logs') }}">
+    Activity Logs
+</a>
+    <a href="/logout">Logout</a>
+</div>
+
+<div class="main">
+
+    <header>
+        <div>
+            <h1>Backup Dashboard</h1>
+            <p>Monitor and protect your server data</p>
+        </div>
+
+        <span class="status">● System Active</span>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+        <div class="message {{ category }}">{{ message }}</div>
+    {% endfor %}
+    {% endwith %}
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Total Records</h3>
+            <h2>{{ total_records }}</h2>
+        </div>
+
+        <div class="card">
+            <h3>Total Backups</h3>
+            <h2>{{ backups|length }}</h2>
+        </div>
+
+        <div class="card">
+            <h3>Backup Schedule</h3>
+            <h2>Every 5 min</h2>
+        </div>
+
+        <div class="card">
+            <h3>Latest Backup</h3>
+            <p>{{ last_backup }}</p>
+        </div>
+
+    </div>
+
+    <section class="panel">
+
+        <h2>Backup Management</h2>
+        <p>Create a backup of your current database.</p>
+
+        <form action="/backup" method="POST">
+            <button type="submit">
+                Create Manual Backup
+            </button>
+        </form>
+
+    </section>
+
+<!-- Automatic Backup Scheduling -->
+<section class="panel">
+
+    <h2>Automatic Backup Scheduling</h2>
+
+    <p>Configure how frequently your server data is backed up.</p>
+
+    <form action="/schedule" method="POST">
+
+        <label for="interval">
+            Select Backup Interval:
+        </label>
+
+        <select name="interval" id="interval">
+
+            <option value="1"
+                {% if backup_interval == 1 %}selected{% endif %}>
+                Every 1 Minute
+            </option>
+
+            <option value="5"
+                {% if backup_interval == 5 %}selected{% endif %}>
+                Every 5 Minutes
+            </option>
+
+            <option value="10"
+                {% if backup_interval == 10 %}selected{% endif %}>
+                Every 10 Minutes
+            </option>
+
+            <option value="30"
+                {% if backup_interval == 30 %}selected{% endif %}>
+                Every 30 Minutes
+            </option>
+
+            <option value="60"
+                {% if backup_interval == 60 %}selected{% endif %}>
+                Every 60 Minutes
+            </option>
+
+        </select>
+
+        <button type="submit">
+            Update Backup Schedule
+        </button>
+
+    </form>
+
+    <p class="schedule-info">
+        Current schedule:
+        <strong>Every {{ backup_interval }} minutes</strong>
+    </p>
+
+</section>
+
+
+    <section class="panel" id="records">
+
+        <h2>Data Management</h2>
+
+        <form action="/add" method="POST" class="record-form">
+
+            <input type="text" name="title"
+            placeholder="Enter record title" required>
+
+            <input type="text" name="description"
+            placeholder="Enter description">
+
+            <button type="submit">Add Record</button>
+
+        </form>
+
+        <div class="table-wrap">
+            <table>
+
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Created At</th>
+                </tr>
+
+                {% for record in records %}
+                <tr>
+                    <td>{{ record[0] }}</td>
+                    <td>{{ record[1] }}</td>
+                    <td>{{ record[2] }}</td>
+                    <td>{{ record[3] }}</td>
+                </tr>
+
+                {% else %}
+                <tr>
+                    <td colspan="4">No records available.</td>
+                </tr>
+                {% endfor %}
+
+            </table>
+        </div>
+
+    </section>
+
+    
+<section class="panel" id="history">
+
+    <h2>Backup History</h2>
+
+    <div class="table-wrap">
+        <table>
+
+            <tr>
+                <th>Backup File</th>
+                <th>Date & Time</th>
+                <th>Size (KB)</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+
+            {% for backup in backups %}
+
+            
+<tr>
+    <td>{{ backup["name"] }}</td>
+
+    <td>{{ backup["date"] }}</td>
+
+    <td>{{ backup["size"] }}</td>
+
+    <td>
+        <span class="success">Available</span>
+    </td>
+
+    <td>
+        <a href="/download/{{ backup['name'] }}"
+           class="download-link">
+            Download
+        </a>
+
+        <form action="/restore/{{ backup['name'] }}"
+              method="POST"
+              onsubmit="return confirmRestore()">
+
+            <button class="restore" type="submit">
+                Restore
+            </button>
+
+        </form>
+    </td>
+</tr>
+
+            {% else %}
+
+            <tr>
+                <td colspan="5">No backups available.</td>
+            </tr>
+
+            {% endfor %}
+
+        </table>
+    </div>
+
+</section>
+
+
+    <footer>
+        Server Web Application with Automatic Backup
+    </footer>
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
