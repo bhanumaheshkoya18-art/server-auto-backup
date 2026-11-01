@@ -118,5 +118,3 @@ Developed as a Python Flask-based Server Auto Backup System project.
 ## 📄 License
 
 This project is licensed under the MIT License.
-# server-auto-backup
-Server Web Application with Auto Backup
